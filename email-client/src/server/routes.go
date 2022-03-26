@@ -1,20 +1,21 @@
 package main
 
 import (
-	"src/handlers"
-	"src/middleware"
+	"server/handlers"
+	"server/middleware"
 )
 
 func initializeRoutes() {
-	userRoutes := router.Group("/user")
+	router.GET("/", handlers.ShowIndexPage)
+	mailRoutes := router.Group("/mail")
 	{
-		userRoutes.GET("/inbox", middleware.EnsureLoggedIn(), handlers.ShowInbox)
-		userRoutes.GET("/outbox", middleware.EnsureLoggedIn(), handlers.ShowOutbox)
-		userRoutes.POST("/send", middleware.EnsureLoggedIn(), handlers.PerformSend)
-		userRoutes.POST("/block", middleware.EnsureLoggedIn(), handlers.PerformBlock)
+		mailRoutes.GET("/inbox", middleware.EnsureLoggedIn(), handlers.ShowInbox)
+		mailRoutes.GET("/outbox", middleware.EnsureLoggedIn(), handlers.ShowOutbox)
+		mailRoutes.POST("/send", middleware.EnsureLoggedIn(), handlers.PerformSend)
+		mailRoutes.POST("/block", middleware.EnsureLoggedIn(), handlers.PerformBlock)
 	}
 
-	mailRoutes := router.Group("/mail")
+	userRoutes := router.Group("/user")
 	{
 		userRoutes.GET("/login", middleware.EnsureNotLoggedIn(), handlers.ShowLoginPage)
 		userRoutes.POST("/login", middleware.EnsureNotLoggedIn(), handlers.PerformLogin)
