@@ -2,9 +2,12 @@ package handlers
 import (
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 	"server/models"
 	"server/utils"
+	"server/configs"
 )
+var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
 
 type UserInput struct {
 	Username  string `json:"username" binding:"required"`
@@ -64,6 +67,12 @@ func RegisterNewUser(c *gin.Context) {
 		})
 	}
 	
+}
+
+func PerformBlock(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "Home Page",
+	}) 
 }
 
 func PerformLogout(c *gin.Context) {
