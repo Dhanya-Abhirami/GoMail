@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"server/configs"
 	"server/models"
 )
@@ -32,16 +33,19 @@ func ShowInbox(c *gin.Context) {
 			"message":   "Unable to process emails",
 			"error": err.Error(),
 		})
+	} else{
+		if err = cursor.All(ctx, &inbox); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message":   "Unable to process emails",
+				"error": err.Error(),
+			})
+		} else{
+			c.JSON(http.StatusOK, gin.H{
+				"message":   inbox,
+			}) 
+		}
 	}
-	if err = cursor.All(ctx, &inbox); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message":   "Unable to process emails",
-			"error": err.Error(),
-		})
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"message":   inbox,
-	}) 
+	
 }
 
 func ShowOutbox(c *gin.Context) {
@@ -57,16 +61,19 @@ func ShowOutbox(c *gin.Context) {
 			"message":   "Unable to process emails",
 			"error": err.Error(),
 		})
+	} else{
+		if err = cursor.All(ctx, &outbox); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message":   "Unable to process emails",
+				"error": err.Error(),
+			})
+		} else{
+			c.JSON(http.StatusOK, gin.H{
+				"message":   outbox,
+			}) 
+		}
 	}
-	if err = cursor.All(ctx, &outbox); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message":   "Unable to process emails",
-			"error": err.Error(),
-		})
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"message":   outbox,
-	}) 
+	
 }
 
 func PerformSend(c *gin.Context) {
@@ -80,10 +87,12 @@ func PerformSend(c *gin.Context) {
 	defer cancel()
 	
 	newEmail := models.Email{
+		Id: primitive.NewObjectID(),
 		Sender:     input.Sender,
 		Receiver: input.Receiver,
 		Subject: input.Subject,
 		Body: input.Body,
+		SentAt: time.Now(),
 	}
 	result, err := emailCollection.InsertOne(ctx, newEmail)
 	if err != nil {
@@ -91,10 +100,11 @@ func PerformSend(c *gin.Context) {
 			"message":   "Failed Email Send",
 			"error": err.Error(),
 		})
-	} 
-	c.JSON(http.StatusOK, gin.H{
-		"message":   "Email Sent",
-		"Id": result.InsertedID,
-	})
+	} else{
+		c.JSON(http.StatusOK, gin.H{
+			"message":   "Email Sent",
+			"Id": result.InsertedID,
+		})
+	}
 }
 

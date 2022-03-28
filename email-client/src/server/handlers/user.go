@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"server/models"
 	"server/utils"
 	"server/configs"
@@ -76,6 +77,7 @@ func RegisterNewUser(c *gin.Context) {
 	err := userCollection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		newUser := models.User{
+			Id: primitive.NewObjectID(),
 			Name:     input.Name,
 			Password: input.Password,
 		}
@@ -96,7 +98,6 @@ func RegisterNewUser(c *gin.Context) {
 			"message":   "User Exists",
 		})
 	}
-	
 }
 
 func PerformBlock(c *gin.Context) {
