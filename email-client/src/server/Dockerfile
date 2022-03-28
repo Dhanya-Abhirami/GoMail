@@ -10,6 +10,8 @@ RUN go get go.mongodb.org/mongo-driver/mongo
 
 RUN go get github.com/joho/godotenv 
 
+RUN go get github.com/golang-jwt/jwt
+
 RUN go get github.com/go-playground/validator/v10
 
 COPY ./ ./
