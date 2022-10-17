@@ -1,9 +1,12 @@
 # GoMail
 A simple client to send and receive emails.
 
+![Alt text](assets/GoMail.drawio.svg?raw=true "Title")
+
 ## Backend
 * Golang with gin
 * MongoDB (remote DB based in mLab)
+* Kafka
 
 ## Setting up
 ```bash
