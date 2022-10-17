@@ -3,7 +3,6 @@ package configs
 
 import (
     "context"
-    "fmt"
     "log"
     "time"
     "go.mongodb.org/mongo-driver/mongo"
@@ -28,7 +27,7 @@ func ConnectDB() *mongo.Client  {
     if err != nil {
         log.Fatal(err)
     }
-    fmt.Println("Connected to MongoDB")
+    log.Println("Connected to MongoDB")
     return client
 }
 

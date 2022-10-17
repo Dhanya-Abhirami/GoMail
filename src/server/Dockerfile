@@ -14,6 +14,8 @@ RUN go get github.com/golang-jwt/jwt
 
 RUN go get github.com/go-playground/validator/v10
 
+RUN go get github.com/segmentio/kafka-go
+
 COPY ./ ./
 
 RUN go build

@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"server/configs"
 	"server/models"
+	"server/messaging"
 )
 
 var emailCollection *mongo.Collection = configs.GetCollection(configs.DB, "email")
@@ -86,7 +87,7 @@ func PerformSend(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	
-	newEmail := models.Email{
+	email := models.Email{
 		Id: primitive.NewObjectID(),
 		Sender:     input.Sender,
 		Receiver: input.Receiver,
@@ -94,13 +95,14 @@ func PerformSend(c *gin.Context) {
 		Body: input.Body,
 		SentAt: time.Now(),
 	}
-	result, err := emailCollection.InsertOne(ctx, newEmail)
+	result, err := emailCollection.InsertOne(ctx, email)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"message":   "Failed Email Send",
 			"error": err.Error(),
 		})
 	} else{
+		messaging.ProduceEmail(email)
 		c.JSON(http.StatusOK, gin.H{
 			"message":   "Email Sent",
 			"Id": result.InsertedID,
